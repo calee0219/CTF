@@ -34,7 +34,6 @@ def solve(x):
 #print solve(cry)
 #print solve('1ELuX8Do1NDSMy4eV8H82dfFtTvKaqYyhg')
 
-'''
 r = remote("178.62.22.245", 58901)
 print r.recvuntil(':')
 r.sendline('Y')
@@ -45,23 +44,24 @@ he = msg[-7:-2]
 print he
 r.sendline(solve(he+'pMLEVAAVTRQ415LtwNbciyxLooHUR'))
 r.recv()
-'''
 while True:
+    '''
     ss = raw_input()
     print(len(ss))
     if len(ss) == 6: print(solve(ss[:5]+'pMLEVAAVTRQ415LtwNbciyxLooHUR'))
     else: print(solve(ss[:-1]))
     '''
+    print '==========start=========='
     message = r.recv()
     print message
     if 'Good' in message: break
     if 'Oops' in message: break
     damaged = message.split('\n')[0].split(':')[1].strip()
-    #print damaged
-    #ss = solve(damaged)
+    print(damaged)
+    print(len(damaged))
+    ss = solve(damaged)
     #print('-------')
-    #print(ss)
+    print(ss)
     #print('-------')
-    r.sendline(solve(damaged))
-    '''
+    r.sendline(ss)
 r.interactive()
