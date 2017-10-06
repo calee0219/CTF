@@ -2,38 +2,54 @@ from pwn import *
 import time
 import base58
 import hashlib
+import string
 
 number = 1
 cry = '18zLFQ3Q8JGVNZrpkun5QBkYiXk2hGQYhS'
 #     '15nQ5pMLEVAAVTRQ415LtwNbciyxLooHUR'
 
 def solve(x):
-    cry = x 
-    clear = base58.b58decode(cry)
-    li = list()
-    for i in clear:
-        li.append(ord(i))
+    base58char = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+    for i in range(len(x)):
+        for char in base58char:
+            cry = x[:i]+char+x[i+1:]
+            print cry
+            clear = base58.b58decode(str(cry))
+            ori = clear[:-4]
+            chk = clear[-4:]
+            rechk = hashlib.sha256(hashlib.sha256(ori).digest()).digest()
+            if chk == rechk[:4]: return cry
+    for i in range(len(x)):
+        for j in range(len(x)):
+            if i == j: continue
+            for charI in base58char:
+                for charJ in base58char:
+                    cry = x[:i]+charI+x[i+1:]
+                    cry = cry[:j]+charJ+cry[j+1:]
+                    print cry
+                    clear = base58.b58decode(str(cry))
+                    ori = clear[:-4]
+                    chk = clear[-4:]
+                    rechk = hashlib.sha256(hashlib.sha256(ori).digest()).digest()
+                    if chk == rechk[:4]: return cry
+    '''
+    clear = base58.b58decode(str(cry))
+    #li = list()
+    #for i in clear:
+    #    li.append(ord(i))
     ori = clear[:-4]
     chk = clear[-4:]
-
-    rechk = hashlib.sha256(ori).digest()
-    rechk = hashlib.sha256(rechk).digest()
-    a = list()
-    for i in rechk:
-        a.append(ord(i))
-
+    rechk = hashlib.sha256(hashlib.sha256(ori).digest()).digest()
     checksum = rechk[:4]
-    #print(a[:4])
-    #print(li[-4:])
     final = ori+checksum
-    #print(final)
-    #print(base58.b58encode(final))
     return base58.b58encode(final)
+    '''
 
 
 #print solve(cry)
-#print solve('1ELuX8Do1NDSMy4eV8H82dfFtTvKaqYyhg')
+#print solve('15GJF8Do1NDSMy4eV8H82dfFtTvKaqYyhg')
 
+'''
 r = remote("178.62.22.245", 58901)
 print r.recvuntil(':')
 r.sendline('Y')
@@ -44,8 +60,8 @@ he = msg[-7:-2]
 print he
 r.sendline(solve(he+'pMLEVAAVTRQ415LtwNbciyxLooHUR'))
 r.recv()
+'''
 while True:
-    '''
     ss = raw_input()
     print(len(ss))
     if len(ss) == 6: print(solve(ss[:5]+'pMLEVAAVTRQ415LtwNbciyxLooHUR'))
@@ -65,3 +81,4 @@ while True:
     #print('-------')
     r.sendline(ss)
 r.interactive()
+'''

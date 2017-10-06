@@ -1,4 +1,5 @@
 from pwn import *
+from bs4 import BeautifulSoup
 import requests
 import time
 import urllib2
@@ -14,20 +15,14 @@ def solve(x):
     for i in clear:
         li.append(ord(i))
     ori = clear[:-4]
-    chk = clear[-4:]
-
+    #chk = clear[-4:]
     rechk = hashlib.sha256(ori).digest()
     rechk = hashlib.sha256(rechk).digest()
-    a = list()
-    for i in rechk:
-        a.append(ord(i))
-
+    #a = list()
+    #for i in rechk:
+    #    a.append(ord(i))
     checksum = rechk[:4]
-    #print(a[:4])
-    #print(li[-4:])
     final = ori+checksum
-    #print(final)
-    #print(base58.b58encode(final))
     return base58.b58encode(final)
 
 
@@ -41,24 +36,13 @@ def checkFactorDB(n):
     regex = re.compile("index\.php\?id\=([0-9]+)", re.IGNORECASE)
     ids = regex.findall(r.text)
     # These give you ID's to the actual number
-    p_id = ids[1]
-    q_id = ids[2]
-    # follow ID's
-    regex = re.compile("value=\"([0-9]+)\"", re.IGNORECASE)
-    r_1 = requests.get('http://www.factordb.com/index.php?id=%s' % p_id)
-    r_2 = requests.get('http://www.factordb.com/index.php?id=%s' % q_id)
-    # Get numbers
-    p = int(regex.findall(r_1.text)[0])
-    ans = 1
-    n = int(n)
-    p = int(p)
-    while n % p == 0:
-        ans *= p
-        n /= p
-    return (ans, n)
+    num = len(ids)-2
+    print(ids)
+    print(num)
+    if num < 2: return 0
+    else: return num * (num-1) / 2
 
 
-#print solve(cry)
 #print solve('1ELuX8Do1NDSMy4eV8H82dfFtTvKaqYyhg')
 
 r = remote("178.62.22.245", 41662)
@@ -74,9 +58,9 @@ print r.recv()
 while True:
     message = r.recv()
     print message
+    if 'Sorry' in message: break
     num = message.split('\n')[0][6:]
-    print num
     fac = checkFactorDB(num)
-    print('('+str(fac[0])+', '+str(fac[1])+')')
-    r.sendline('('+str(fac[0])+','+str(fac[1])+')')
+    print(fac)
+    r.sendline(str(fac))
 r.interactive()
