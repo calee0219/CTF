@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import os
 import string
 import binascii
@@ -6,6 +9,7 @@ ans = '4b240000f3270000632f0000b3460000f3bc000033fe0000332c030033530700472700004
 
 flag = ''
 
+end = 0
 while True:
     for i in string.ascii_lowercase + string.digits + string.ascii_uppercase + '{}':
         test = flag + i
@@ -15,3 +19,8 @@ while True:
             hexdata = binascii.hexlify(f.read())
             if hexdata == ans[:len(hexdata)]:
                 flag = flag + i
+                if i == '}':
+                    end = 1
+                    break
+    if end:
+        break
